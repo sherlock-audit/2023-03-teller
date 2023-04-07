@@ -74,4 +74,18 @@ A: [ACCEPTABLE/NOT ACCEPTABLE]
 
 # Audit scope
 
+
+[teller-protocol-v2 @ cb66c9e348cdf1fd6d9b0416a49d663f5b6a693c](https://github.com/teller-protocol/teller-protocol-v2/tree/cb66c9e348cdf1fd6d9b0416a49d663f5b6a693c)
+- [teller-protocol-v2/packages/contracts/contracts/MarketRegistry.sol](teller-protocol-v2/packages/contracts/contracts/MarketRegistry.sol)
+- [teller-protocol-v2/packages/contracts/contracts/ProtocolFee.sol](teller-protocol-v2/packages/contracts/contracts/ProtocolFee.sol)
+- [teller-protocol-v2/packages/contracts/contracts/TellerV2.sol](teller-protocol-v2/packages/contracts/contracts/TellerV2.sol)
+- [teller-protocol-v2/packages/contracts/contracts/TellerV2Storage.sol](teller-protocol-v2/packages/contracts/contracts/TellerV2Storage.sol)
+- [teller-protocol-v2/packages/contracts/contracts/TellerV2Context.sol](teller-protocol-v2/packages/contracts/contracts/TellerV2Context.sol)
+- [teller-protocol-v2/packages/contracts/contracts/CollateralManager.sol](teller-protocol-v2/packages/contracts/contracts/CollateralManager.sol)
+- [teller-protocol-v2/packages/contracts/contracts/escrow/CollateralEscrowV1.sol](teller-protocol-v2/packages/contracts/contracts/escrow/CollateralEscrowV1.sol)
+- [teller-protocol-v2/packages/contracts/contracts/LenderCommitmentForwarder.sol](teller-protocol-v2/packages/contracts/contracts/LenderCommitmentForwarder.sol)
+- [teller-protocol-v2/packages/contracts/contracts/LenderManager.sol](teller-protocol-v2/packages/contracts/contracts/LenderManager.sol)
+
+
+
 # About [project name]
