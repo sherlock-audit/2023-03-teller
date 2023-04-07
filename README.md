@@ -1,5 +1,5 @@
 
-# [project name] contest details
+# Teller Protocol V2 contest details
 
 - Join [Sherlock Discord](https://discord.gg/MABEWyASkp)
 - Submit findings using the issue page in your private contest repo (label issues as med or high)
@@ -7,23 +7,28 @@
 
 # Resources
 
-- [[resource1]](url)
-- [[resource2]](url)
+- [Teller V2 Gitbook](https://docs.teller.org/teller-v2/)
 
 # On-chain context
-
-The README is a **very important** document for the audit. Please fill it out thoroughly and include any other specific info that security experts will need in order to effectively review the codebase.
+ 
 
 **Some pointers for filling out the section below:**  
 ERC20/ERC721/ERC777/FEE-ON-TRANSFER/REBASING TOKENS:  
 *Which tokens do you expect will interact with the smart contracts? Please note that these answers have a significant impact on the issues that will be submitted by Watsons. Please list specific tokens (ETH, USDC, DAI) where possible, otherwise "Any"/"None" type answers are acceptable as well.*
 
+Any tokens are acceptable and this is one area where research is needed to ensure that functionality is not taken advantage of and that assumptions are not broken in the protocol. This includes tokens (principal or collateral) which attempt to use re-entrancy to break assumptions. 
+
+
 ADMIN:
+Even the Admins/owners should not be able to steal funds from the protocol (assuming no changes to solidity code of course).
+
 *Admin/owner of the protocol/contracts.
 Label as TRUSTED, If you **don't** want to receive issues about the admin of the contract being able to steal funds. 
 If you want to receive issues about the Admin of the contract being able to steal funds, label as RESTRICTED & list specific acceptable/unacceptable actions for the admins.*
 
 EXTERNAL ADMIN:
+Even the Admins/owners should not be able to steal funds from the protocol (assuming no changes to solidity code of course).
+
 *These are admins of the protocols your contracts integrate with (if any). 
 If you **don't** want to receive issues about this Admin being able to steal funds or result in loss of funds, label as TRUSTED
 If you want to receive issues about this admin being able to steal or result in loss of funds, label as RESTRICTED.*
@@ -47,29 +52,36 @@ Please answer the following questions to provide more context:
 3) Outcomes that are expected from those roles 
 4) Specific actions/outcomes NOT intended to be possible for those roles
 
-A: 
+A: 1) Roles include borrowers, lenders and liquidators.  
+2) Borrowers can 'submitbid' which defines a new potential loan with committed collateral (approved but not deposited).  Lenders can accept those submitted bids which transfers the requested principal to the borrower, locks the borrowers collateral into escrow, and activates the loan. 
+3)  When the loan is fully repaid, the borrower can withdraw the collateral.  If the loan becomes defaulted instead, then the lender has a 24 hour grace period to claim the collateral (losing the principal) and after that, anyone is allowed to liquidate the loan to pay the borrower the rest of the principal+interest that the borrower failed to repay and claim the collateral for themselves.  
+4) Collateral should not be able to withdrawn except for in those ways by the borrower, lender, or liquidator.  Collateral should not be able to be permanently locked/burned in the contracts (loans will always eventually default and be liquidateable). 
+
+
+
+NOTE: The owner of the TellerV2 contract(s) is not able to directly withdraw collateral (assuming no contract upgrade) nor are they able to affect loan statuses or committed capital (assuming no contract upgrade).  One ultimate goal when contract logic can be proven to be sound is to revoke ownership of contracts and make them non-upgradeable after that point. 
 
 ___
 ### Q: Is the code/contract expected to comply with any EIPs? Are there specific assumptions around adhering to those EIPs that Watsons should be aware of?
-A:
-
+A: The contracts are expected to comply with the ERC20, ERC721 and ERC1155 EIPs of which any can be used as loan collateral.  Only ERC20 tokens can be used as loan principal.  During the audit, please verify that rebasing ERC20 tokens and other weird tokens will not interfere with the protocol assumptions.  If a rebasing/weird token breaks just the loan that it is in, we want to know about it but that is bad but largely OK (not hyper critical) since the borrower and lender both agreed to that asset manually beforehand and, really, shouldnt have.  If a rebasing/weird token in a loan can break OTHER loans that is a major bug that we definitely need to be aware of.  
 ___
 
 ### Q: Please list any known issues/acceptable risks that should not result in a valid finding.
-A: 
+A: Known issue 1: Collateral assets that can be 'paused' for transfer do exhibit a risk since they may not be able to be withdrawn from the loans as collateral. Furthermore, collateral assets that can be made non-transferrable can actually 'poison' a collateral vault and make a loan non-liquidateable since a liquidateLoan call would revert.  
 
 ____
 ### Q: Please provide links to previous audits (if any).
-A:
+A: n/a
 
 ___
 
 ### Q: Are there any off-chain mechanisms or off-chain procedures for the protocol (keeper bots, input validation expectations, etc)? 
-A: 
+A: When creating loan commitments, it is important to understand how decimals are expanded for calculating ratios such as maxPrincipalPerCollateralAmount and so typescript libraries are provided for that purpose.  However Teller avoids the use of any centralized mechanisms or on-chain oracles in order to remain as decentralized as possible.  
 _____
 
 ### Q: In case of external protocol integrations, are the risks of an external protocol pausing or executing an emergency withdrawal acceptable? If not, Watsons will submit issues related to these situations that can harm your protocol's functionality. 
 A: [ACCEPTABLE/NOT ACCEPTABLE] 
+Collateral assets that can be 'paused' for transfer do exhibit a risk since they may not be able to be withdrawn from the loans as collateral. Furthermore, collateral assets that can be made non-transferrable can actually 'poison' a collateral vault and make a loan non-liquidateable since a liquidateLoan call would revert.  Therefore collateral assets which have transferrability which can be paused should not be used as collateral.  Furthermore, the liquidateLoan method in particular should be restructured so that it does not intrinsically withdraw collateral but instead just switches the loan to a 'liquidated' state which allows the liquidator to then with a separate transaction claim the collateral.  
 
 
 # Audit scope
@@ -88,4 +100,7 @@ A: [ACCEPTABLE/NOT ACCEPTABLE]
 
 
 
-# About [project name]
+# About Teller V2 Protocol
+The Teller Protocol operates as decentralized software, enabling unsecured DeFi digital asset lending and borrowing through an open order-book model.
+Through the protocol, borrowers can bridge off-chain data onto on-chain loan requests. Those requesting assets propose a loan request, and those supplying assets commit those assets to loan requests of their choosing. Lenders who agree to loan terms requested by borrowers, based on the data provided or required, transact directly.
+Information appended to a loan request is at the borrower's discretion. This may include details from a borrower’s financial stature, social status, identity, or other relevant data. The Teller Protocol is data agnostic and does not have an opinion on the user. The user can gather any type of data from third parties.
