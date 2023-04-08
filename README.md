@@ -20,6 +20,7 @@ Any tokens are acceptable and this is one area where research is needed to ensur
 
 
 ADMIN:
+
 Even the Admins/owners should not be able to steal funds from the protocol (assuming no changes to solidity code of course).
 
 *Admin/owner of the protocol/contracts.
@@ -52,10 +53,16 @@ Please answer the following questions to provide more context:
 3) Outcomes that are expected from those roles 
 4) Specific actions/outcomes NOT intended to be possible for those roles
 
-A: 1) Roles include borrowers, lenders and liquidators.  
-2) Borrowers can 'submitbid' which defines a new potential loan with committed collateral (approved but not deposited).  Lenders can accept those submitted bids which transfers the requested principal to the borrower, locks the borrowers collateral into escrow, and activates the loan. 
+A: 
+1) Roles include market owners, borrowers, lenders and liquidators. 
+
+2) Market owners own markets and can control settings such as acceptable interest rates and loan durations within a market.  Each loan that is submitted must belong to a 'market' specific by a 'marketId' and the loan will derive some of its parameters from that.   Borrowers can 'submitbid' which defines a new potential loan with committed collateral (approved but not deposited).  Lenders can accept those submitted bids which transfers the requested principal to the borrower, locks the borrowers collateral into escrow, and activates the loan. 
+
 3)  When the loan is fully repaid, the borrower can withdraw the collateral.  If the loan becomes defaulted instead, then the lender has a 24 hour grace period to claim the collateral (losing the principal) and after that, anyone is allowed to liquidate the loan to pay the borrower the rest of the principal+interest that the borrower failed to repay and claim the collateral for themselves.  
+
 4) Collateral should not be able to withdrawn except for in those ways by the borrower, lender, or liquidator.  Collateral should not be able to be permanently locked/burned in the contracts (loans will always eventually default and be liquidateable). 
+
+Market owners should NOT be able to race-condition attack borrowers or lenders by changing market settings while bids are being submitted or accepted (while tx are in mempool).  Care has been taken to ensure that this is not possible (similar in theory to sandwich attacking but worse as if possible it could cause unexpected and non-consentual interest rate on a loan) and further-auditing of this is welcome.  The best way to defend against this is to allow borrowers and lenders to specify such loan parameters in their TX such that they are explicitly consenting to them in the tx and then reverting if the market settings conflict with those tx arguments. 
 
 
 
@@ -63,11 +70,18 @@ NOTE: The owner of the TellerV2 contract(s) is not able to directly withdraw col
 
 ___
 ### Q: Is the code/contract expected to comply with any EIPs? Are there specific assumptions around adhering to those EIPs that Watsons should be aware of?
+
 A: The contracts are expected to comply with the ERC20, ERC721 and ERC1155 EIPs of which any can be used as loan collateral.  Only ERC20 tokens can be used as loan principal.  During the audit, please verify that rebasing ERC20 tokens and other weird tokens will not interfere with the protocol assumptions.  If a rebasing/weird token breaks just the loan that it is in, we want to know about it but that is bad but largely OK (not hyper critical) since the borrower and lender both agreed to that asset manually beforehand and, really, shouldnt have.  If a rebasing/weird token in a loan can break OTHER loans that is a major bug that we definitely need to be aware of.  
+
+The Teller contracts also adhere to ERC2771 meta transactions standard which is used in TellerV2Context in order to override 'msgSender' using an address appended to calldata.  This is used for borrowers and lenders to be able to pre-approve a 'trusted market forwarder' contract to submit and accept bids on their behalf.  This ERC2771 context is implemented using a forked version of OpenZeppelins standard non-upgradeable ERC2771 but references the upgradeable ContextUpgradeable so as to not break storage slots as this was amended after initial deployment. 
+
+
 ___
 
 ### Q: Please list any known issues/acceptable risks that should not result in a valid finding.
+
 A: Known issue 1: Collateral assets that can be 'paused' for transfer do exhibit a risk since they may not be able to be withdrawn from the loans as collateral. Furthermore, collateral assets that can be made non-transferrable can actually 'poison' a collateral vault and make a loan non-liquidateable since a liquidateLoan call would revert.  
+
 
 ____
 ### Q: Please provide links to previous audits (if any).
@@ -76,11 +90,15 @@ A: n/a
 ___
 
 ### Q: Are there any off-chain mechanisms or off-chain procedures for the protocol (keeper bots, input validation expectations, etc)? 
+
 A: When creating loan commitments, it is important to understand how decimals are expanded for calculating ratios such as maxPrincipalPerCollateralAmount and so typescript libraries are provided for that purpose.  However Teller avoids the use of any centralized mechanisms or on-chain oracles in order to remain as decentralized as possible.  
+
 _____
 
 ### Q: In case of external protocol integrations, are the risks of an external protocol pausing or executing an emergency withdrawal acceptable? If not, Watsons will submit issues related to these situations that can harm your protocol's functionality. 
-A: [ACCEPTABLE/NOT ACCEPTABLE] 
+
+A: [ACCEPTABLE] 
+
 Collateral assets that can be 'paused' for transfer do exhibit a risk since they may not be able to be withdrawn from the loans as collateral. Furthermore, collateral assets that can be made non-transferrable can actually 'poison' a collateral vault and make a loan non-liquidateable since a liquidateLoan call would revert.  Therefore collateral assets which have transferrability which can be paused should not be used as collateral.  Furthermore, the liquidateLoan method in particular should be restructured so that it does not intrinsically withdraw collateral but instead just switches the loan to a 'liquidated' state which allows the liquidator to then with a separate transaction claim the collateral.  
 
 
