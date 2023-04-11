@@ -104,20 +104,6 @@ Collateral assets that can be 'paused' for transfer do exhibit a risk since they
 
 # Audit scope
 
-
-[teller-protocol-v2 @ cb66c9e348cdf1fd6d9b0416a49d663f5b6a693c](https://github.com/teller-protocol/teller-protocol-v2/tree/cb66c9e348cdf1fd6d9b0416a49d663f5b6a693c)
-- [teller-protocol-v2/packages/contracts/contracts/MarketRegistry.sol](teller-protocol-v2/packages/contracts/contracts/MarketRegistry.sol)
-- [teller-protocol-v2/packages/contracts/contracts/ProtocolFee.sol](teller-protocol-v2/packages/contracts/contracts/ProtocolFee.sol)
-- [teller-protocol-v2/packages/contracts/contracts/TellerV2.sol](teller-protocol-v2/packages/contracts/contracts/TellerV2.sol)
-- [teller-protocol-v2/packages/contracts/contracts/TellerV2Storage.sol](teller-protocol-v2/packages/contracts/contracts/TellerV2Storage.sol)
-- [teller-protocol-v2/packages/contracts/contracts/TellerV2Context.sol](teller-protocol-v2/packages/contracts/contracts/TellerV2Context.sol)
-- [teller-protocol-v2/packages/contracts/contracts/CollateralManager.sol](teller-protocol-v2/packages/contracts/contracts/CollateralManager.sol)
-- [teller-protocol-v2/packages/contracts/contracts/escrow/CollateralEscrowV1.sol](teller-protocol-v2/packages/contracts/contracts/escrow/CollateralEscrowV1.sol)
-- [teller-protocol-v2/packages/contracts/contracts/LenderCommitmentForwarder.sol](teller-protocol-v2/packages/contracts/contracts/LenderCommitmentForwarder.sol)
-- [teller-protocol-v2/packages/contracts/contracts/LenderManager.sol](teller-protocol-v2/packages/contracts/contracts/LenderManager.sol)
-
-
-
 # About Teller V2 Protocol
 The Teller Protocol operates as decentralized software, enabling unsecured DeFi digital asset lending and borrowing through an open order-book model.
 Through the protocol, borrowers can bridge off-chain data onto on-chain loan requests. Those requesting assets propose a loan request, and those supplying assets commit those assets to loan requests of their choosing. Lenders who agree to loan terms requested by borrowers, based on the data provided or required, transact directly.
