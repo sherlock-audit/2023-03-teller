@@ -1,0 +1,220 @@
+type MarketPlace @entity {
+  id: ID!
+  marketplaceId: BigInt!
+  owner: Bytes
+  feeRecipient: Bytes
+  metadataURI: String
+  isMarketOpen: Boolean
+  paymentDefaultDuration: BigInt!
+  paymentCycleDuration: BigInt!
+  paymentCycleType: String!
+  bidExpirationTime: BigInt!
+  borrowerAttestationRequired: Boolean
+  lenderAttestationRequired: Boolean
+  marketplaceFeePercent: BigInt!
+  openRequests: BigInt!
+  activeLoans: BigInt!
+  closedLoans: BigInt!
+  aprAverage: BigInt!
+  _aprTotal: BigInt!
+  durationAverage: BigInt
+  _durationTotal: BigInt
+  totalNumberOfLenders: BigInt!
+  tokenVolumes: [MarketVolume!]! @derivedFrom(field: "market")
+  lenders: [Lender!]! @derivedFrom(field: "marketplace")
+  borrowers: [Borrower!]! @derivedFrom(field: "marketplace")
+  bids: [Bid!]! @derivedFrom(field: "marketplace")
+  commitments: [Commitment!]! @derivedFrom(field: "marketplace")
+  paymentType: String!
+}
+
+type Bid @entity {
+  id: ID!
+  bidId: BigInt!
+  createdAt: BigInt!
+  expiresAt: BigInt!
+  updatedAt: BigInt
+  transactionHash: String!
+  fundedTx: FundedTx @derivedFrom(field: "bid")
+
+  borrowerAddress: Bytes!
+  borrower: BorrowerBid! @derivedFrom(field: "bid")
+
+  receiverAddress: Bytes!
+
+  lenderAddress: Bytes
+  lender: LenderBid @derivedFrom(field: "bid")
+
+  marketplaceId: BigInt!
+  metadataURI: String!
+  status: String!
+  lendingTokenAddress: Bytes!
+  principal: BigInt!
+  acceptedTimestamp: BigInt!
+  lastRepaidTimestamp: BigInt!
+  loanDuration: BigInt!
+  paymentCycle: BigInt!
+  paymentCycleAmount: BigInt!
+  apr: BigInt!
+  endDate: BigInt
+  nextDueDate: BigInt
+  marketplace: MarketPlace!
+  commitment: Commitment
+  commitmentId: String
+
+  payments: [Payment!]! @derivedFrom(field: "bid")
+  totalRepaidPrincipal: BigInt!
+  totalRepaidInterest: BigInt!
+  _lastTotalRepaidAmount: BigInt!
+  _lastTotalRepaidInterestAmount: BigInt!
+  paymentDefaultDuration: BigInt!
+  collateralEscrow: Bytes
+  collateral: [Collateral!] @derivedFrom(field: "bid")
+}
+
+type Collateral @entity {
+  id: ID!
+  amount: BigInt!
+  tokenId: BigInt!
+  type: String
+  collateralAddress: Bytes!
+  bid: Bid!
+  status: String
+  receiver: Bytes
+}
+
+type FundedTx @entity {
+  id: ID!
+  bid: Bid!
+  timestamp: BigInt!
+}
+
+type Payment @entity {
+  id: ID!
+  bid: Bid!
+  principal: BigInt!
+  interest: BigInt!
+  paymentDate: BigInt
+  outstandingCapital: BigInt!
+  status: String
+}
+
+type User @entity {
+  id: ID!
+  firstInteractionDate: BigInt!
+  lenders: [Lender!]! @derivedFrom(field: "user")
+  borrowers: [Borrower!]! @derivedFrom(field: "user")
+}
+
+type LenderBid @entity {
+  id: ID!
+  lender: Lender!
+  bid: Bid!
+}
+
+type BorrowerBid @entity {
+  id: ID!
+  borrower: Borrower!
+  bid: Bid!
+}
+
+type Lender @entity {
+  id: ID!
+  marketplaceId: BigInt!
+  lenderAddress: Bytes!
+  firstInteractionDate: BigInt!
+  attestedTimestamp: BigInt
+  isAttested: Boolean!
+  activeLoans: BigInt!
+  closedLoans: BigInt!
+  bidsAccepted: BigInt!
+  tokenVolume: [TokenVolume!] @derivedFrom(field: "lender")
+  marketplace: MarketPlace!
+  user: User!
+  bids: [LenderBid!] @derivedFrom(field: "lender")
+  commitment: Commitment
+}
+
+type Borrower @entity {
+  id: ID!
+  marketplaceId: BigInt!
+  borrowerAddress: Bytes!
+  firstInteractionDate: BigInt!
+  attestedTimestamp: BigInt
+  isAttested: Boolean!
+  activeLoans: BigInt!
+  closedLoans: BigInt!
+  bidsAccepted: BigInt!
+  tokenVolume: [TokenVolume!] @derivedFrom(field: "borrower")
+  marketplace: MarketPlace!
+  user: User!
+  bids: [BorrowerBid!] @derivedFrom(field: "borrower")
+}
+
+type TokenVolume @entity {
+  id: ID!
+
+  marketplace: MarketPlace
+  lender: Lender
+  borrower: Borrower
+  commitment: Commitment
+
+  ## TokenStats ##
+  lendingTokenAddress: Bytes!
+  bids: [Bid!]!
+  activeLoans: BigInt!
+  closedLoans: BigInt!
+
+  outstandingCapital: BigInt!
+  totalLoaned: BigInt!
+  loanAverage: BigInt!
+
+  commissionEarned: BigInt!
+  totalRepaidInterest: BigInt!
+
+  _aprTotal: BigInt!
+  aprAverage: BigInt!
+
+  _durationTotal: BigInt!
+  durationAverage: BigInt!
+
+  ## end TokenStats ##
+}
+
+type MarketVolume @entity {
+  id: ID!
+  market: MarketPlace!
+  volume: TokenVolume!
+}
+
+type Commitment @entity {
+  id: ID!
+  createdAt: BigInt!
+
+  # Offer
+  committedAmount: BigInt! # Max principal
+  expirationTimestamp: BigInt!
+  maxDuration: BigInt!
+  minAPY: BigInt!
+  bids: [Bid!]! @derivedFrom(field: "commitment")
+  principalTokenAddress: Bytes!
+
+  # Required Collateral
+  collateralTokenAddress: Bytes!
+  collateralTokenId: BigInt!
+  collateralTokenType: String
+  maxPrincipalPerCollateralAmount: BigInt!
+
+  commitmentBorrowers: [Bytes!]!
+
+  # Lender
+  lender: Lender!
+  lenderAddress: Bytes!
+
+  # Market
+  marketplace: MarketPlace!
+  marketplaceId: BigInt!
+
+  # TokenStats
+  stats: TokenVolume!
+}
