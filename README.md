@@ -35,7 +35,7 @@ If you **don't** want to receive issues about this Admin being able to steal fun
 If you want to receive issues about this admin being able to steal or result in loss of funds, label as RESTRICTED.*
  
 ```
-DEPLOYMENT: mainnet, arbitrum, optimism, polygon, base
+DEPLOYMENT: mainnet, arbitrum, optimism, polygon, base, zksync era, polygon zkevm
 ERC20: any
 ERC721: any 
 ERC777: none
