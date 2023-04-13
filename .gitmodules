@@ -1,6 +1,3 @@
-[submodule "teller-protocol-v2/packages/contracts/packages/contracts/lib/forge-std"]
-	path = teller-protocol-v2/packages/contracts/packages/contracts/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
 [submodule "teller-protocol-v2/packages/contracts/lib/forge-std"]
 	path = teller-protocol-v2/packages/contracts/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
