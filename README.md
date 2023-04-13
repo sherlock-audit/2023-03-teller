@@ -35,14 +35,15 @@ If you **don't** want to receive issues about this Admin being able to steal fun
 If you want to receive issues about this admin being able to steal or result in loss of funds, label as RESTRICTED.*
  
 ```
-DEPLOYMENT: [e.g. mainnet, Arbitrum, Optimism, ..]
-ERC20: [e.g. any, none, USDC, USDC and USDT]
-ERC721: [e.g. any, none, UNI-V3]
-ERC777: [e.g. any, none, {token name}]
-FEE-ON-TRANSFER: [e.g. any, none, {token name}]
-REBASING TOKENS: [e.g. any, none, {token name}]
-ADMIN: [trusted, restricted, n/a]
-EXTERNAL-ADMINS: [trusted, restricted, n/a]
+DEPLOYMENT: mainnet, arbitrum, optimism, polygon, base
+ERC20: any
+ERC721: any 
+ERC777: none
+ERC1155: any 
+FEE-ON-TRANSFER: any
+REBASING TOKENS: none (not supported)
+ADMIN: restricted
+EXTERNAL-ADMINS: n/a
 ```
 
 
