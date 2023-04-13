@@ -30,11 +30,8 @@ GOERLI_RPC_URL= ...
  > forge doc --serve 
 
 
-### Git LFS 
-Some deployment files are stored using LFS.  To fetch these, use the command 
+### Troubleshooting 
 
-- Fetch deployment files from git LFS 
-```
- git lfs fetch --all
+git submodule add https://github.com/foundry-rs/forge-std packages/contracts/lib/forge-std
 
-```
+
